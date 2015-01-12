@@ -1,0 +1,26 @@
+---
+# main playbook file for ansible-balanced-stalk-docker
+- hosts: all
+  vars:
+    citadel_bucket: 'balanced-citadel'
+    docker_config: "{{ lookup('citadel', 'docker/.dockercfg') | from_json }}"
+    app_src: /opt/gandalf
+  tasks:
+
+    - name: remove app if it exists
+      command: rm -fr "{{ app_src }}"
+
+    - name: unzip app
+      shell: >
+        unzip -o -d "{{ app_src }}" \
+          $(/opt/elasticbeanstalk/bin/get-config container -k source_bundle)
+
+    - name: create secrets from citadel
+      shell: make secrets DEST='/root'
+      args:
+        chdir: "{{ app_src }}"
+
+    - name: bootstrap users
+      shell: make setup-user-ssh-keys
+      args:
+        chdir: "{{ app_src }}"

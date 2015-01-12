@@ -1,2 +1,10 @@
 ---
 # defaults file for ansible-balanced-stalk-docker
+
+# secrets assembler
+secrets: []
+
+# bootstrapper
+bootstrapping_docker_image: balanced/infra-global:experimental
+inceptor_home: /tmp/ansible_inception
+
